@@ -1,0 +1,32 @@
+{
+  "name": "painel-concorrentes-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Backend do Painel de Concorrentes (Auton Health) — pipeline de IA em Mastra",
+  "scripts": {
+    "dev": "mastra dev",
+    "build": "mastra build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@ai-sdk/google": "^3.0.80",
+    "@ai-sdk/openai": "^3.0.65",
+    "@mastra/core": "^1.36.0",
+    "@mastra/deployer-vercel": "^1.1.31",
+    "@mastra/libsql": "^1.11.1",
+    "@mastra/loggers": "^1.1.1",
+    "@mastra/pg": "^1.11.1",
+    "@supabase/supabase-js": "^2.106.2",
+    "ai": "^6.0.191",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "mastra": "^1.10.0",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

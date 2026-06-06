@@ -1,0 +1,977 @@
+O problema fundamental: nao e a ferramenta
+0:00
+PRD é incremental. É um PRD dinâmico,
+0:03
+dinâmico,
+0:05
+dinâmico. Eita que hoje a gente tá
+0:08
+brincando. E vou ajudar a galera que tá
+0:11
+sofrendo. Sofrendo. Por quê? Porque eu
+0:14
+vi aquela pessoa, aquele bendito, e
+Sem processo, a execucao trava
+0:17
+disse assim: "Deus do céu, esse negócio
+0:19
+só gasta token, não fica bom. Eu não
+0:22
+consigoar
+0:25
+nada com a
+0:28
+Oh,
+0:31
+eu tenho uma coisa para lhe dizer. Seus
+0:34
+problemas acabaram, porque eu vou te
+0:36
+ensinar como você vai utilizar essa
+0:39
+ferramenta corretamente. Eu te explico o
+0:42
+fundamento do qual isso está dando
+0:45
+errado. Porque se o negócio ele é bom
+0:47
+demais, você não sabe utilizar, é como
+0:50
+você tivesse utilizando uma Ferrari para
+0:52
+postar corrida com um Fusca andando a 30
+0:54
+km/h. Não vai dar. Mas antes de começar
+0:57
+o vídeo, eu quero te dizer que eu sou
+0:59
+Italo Iá, eu sou engenheiro de
+1:00
+inteligência artificial, estou debugando
+1:03
+passo a passo a ferramenta e a iOS e vou
+1:06
+te ensinar a como você vai construir um
+1:08
+negócio que funciona de verdade e o
+Reset: sem processo = sem entrega
+1:11
+passo a passo para isso. Continua no
+1:13
+vídeo, se inscreve no canal, dá o like,
+1:15
+porque isso tá me ajudando a continuar
+1:18
+te ajudando, escrevendo eu fazendo esses
+1:21
+esse negócio aqui. A primeira coisa que
+1:23
+você tem que entender é que você precisa
+1:26
+fazer o chamado PRD. O que é PRD? É um
+1:30
+product e requirements document. É um
+1:32
+documento que descreve o que um produto
+1:35
+precisa fazer. O objetivo do produto,
+1:37
+público alvo, funcionalidades,
+1:39
+requisitos no gerais, métricas de
+1:42
+sucesso e restrições e riscos. Só o que
+1:44
+que tá acontecendo? O pessoal tá ouvindo
+1:46
+que precisa de PRD para fazer o Vibe
+1:48
+Code. Isso é uma verdade. Você precisa
+1:51
+de productive requirements para fazer
+1:53
+qualquer produto de inteligência
+1:55
+artificial, produto de tecnologia,
+1:58
+produto no geral. Isso é extremamente
+2:01
+necessário. É, é a mesma coisa que se
+2:03
+você for pedir uma camisa e se você não
+Os 3 erros que atrasam tudo
+2:05
+tiver descrição nenhuma, ela pode vir
+2:07
+uma camisa branca ou pode vir uma camisa
+2:09
+preta. Então você precisa
+2:11
+necessariamente delimitar, delimitar
+2:14
+tudo aquilo que o seu produto deve ter.
+2:16
+Mas mesmo você pedindo e solicitando a
+2:20
+ferramenta para ela poder fazer isso
+2:22
+acontecer, criar esse PRD, criar as
+2:25
+perguntas para você, não está
+2:26
+funcionando corretamente. E eu vou te
+2:28
+mostrar uma coisa aqui. Deixa eu abrir o
+2:31
+antigravidade. Eu abri o antigravidade,
+2:33
+então eu rodei o projeto e eu criei o
+2:35
+projeto exatamente com um simples,
+2:38
+simples PRD, não, acho que foi um PRD
+2:40
+gigantão. Só que pra chegar nisso daqui
+2:43
+que está feio, que está feio, diga de
+2:46
+passagem, eu demorei pra caramba. Passei
+2:49
+a tarde toda pedindo faça, refaça, faça,
+2:52
+refaça. Exatamente do jeito que vocês
+2:55
+estão fazendo. É exatamente igual. E aí
+2:57
+o que que acontece? Como eu entendo
+2:59
+bastante de código, quando você vai
+3:01
+abrir o projeto, o projeto vai tá assim,
+3:03
+ó. Abre o HTML dele, ó tamanho, ó a la
+3:05
+lpa do HTML. Não, tá, até tá bom. Ó a
+3:09
+lapa dos do CSS dele, cara. Olha o
+Metodo em 5 passos para destravar
+3:13
+próprio aplicativo. Isso aqui é
+3:15
+totalmente totalmente fora de órbita.
+3:18
+Totalmente fora de órbita. Não existe
+3:20
+código ou pessoas que façam uma
+3:23
+porralhada de código desse jeito dentro
+3:25
+de um próprio arquivo. Existe uma
+3:27
+arquitetura de diretório e ele não tá
+3:30
+seguindo arquitetura. E olha que eu vou
+3:32
+mostrar aqui onde tá o o PRD para
+3:35
+mostrar para vocês que o meu PRD estava
+3:38
+bom. Estava bom, só que ele não consegue
+3:41
+entregar o PRD. Ó, ó a lapa do PRD. Gost
+3:46
+background context. Parará parará. Ó a
+3:49
+lapa do PRD, irmão. Olha a lapa do PRD.
+3:52
+E olha o projeto como tá. Tá uma merda.
+3:55
+Tá uma merda. Só que eu fiz esse todo
+3:59
+esse processo testando, por isso que eu
+4:01
+não gravei vídeos e vendo como que o
+4:03
+usuário pediria para mostrar para vocês
+4:05
+o jeito certo de se fazer isso. Porque
+4:09
+todo processo criativo dentro da
+4:12
+inteligência artificial, ele precisa
+4:13
+fazer uma cadência de coisas. Ele
+4:15
+precisa um resultado de um ir para outro
+4:17
+porque são especialistas. É assim que
+4:20
+funciona o CRAI, é assim que funciona o
+4:22
+Multientes dentro da Open Ai SDK. E é
+4:25
+também o jeito que a gente vai fazer
+4:27
+para que essa porcaria do Aios funcione
+4:30
+corretamente. Então vem para aqui pro
+4:32
+Obsían para eu te mostrar ou o framework
+4:35
+por completo como é que você vai
+4:37
+utilizar ele para ele mesmo criar o
+PRD ruim x PRD bom
+4:40
+próprio PDR e você utilizar dentro do
+4:43
+projeto. Para para pensar que agora o
+4:45
+teu projeto é um projeto do zero,
+4:47
+totalmente do zero. Totalmente do zero.
+4:49
+Agora você vai fazer o seguinte, você
+4:51
+vai pegar ele e criar um Greenfield
+4:53
+Fteck. Por que Greenfield Fusty? O que
+4:55
+que significa isso? Ó, Greenfield seria
+4:58
+um projeto verde, um projeto do zero,
+5:00
+beleza? Verdinho, green, green. E o
+5:02
+Fusteck seria todas as funcionalidades,
+5:06
+a parte visual, a parte de UX, a parte
+5:09
+de trás, a parte de gestão de projetos
+5:12
+em si. Beleza? Aí o que acontece? A
+5:14
+primeira etapa, a primeira etapa você
+5:16
+vai preparar ambiente, instalar CLIs,
+5:19
+fazer tudo que a gente já ensinou e que
+5:21
+você pode vir aqui embaixo e olhar tudo
+5:23
+certinho, beleza? Instalar o Cloud Code,
+5:25
+instalar tudo, tudo, tudo, tudo, iOS,
+5:28
+criar a parte do Git, o GitHub, tudo que
+5:31
+é é funcionalidade que pode ser criado
+5:34
+automaticamente dentro com Hway iOS. Mas
+5:37
+vamos para lá. A primeira etapa do
+5:39
+projeto, todo mundo fala que você já tem
+5:41
+que fazer um PRD, entregar um PRD.
+5:44
+Pronto. E com o e iOS não funciona desse
+5:46
+jeito. Você primeiro precisa criar um
+5:49
+briefing. Criar um briefing. Então você
+Pipeline de orquestracao na ordem certa
+5:51
+vai chamar o analista para criar um
+5:53
+briefing. E esse briefing ele tem, o
+5:55
+analista, ele tem a possibilidade de
+5:57
+pegar suas informações, pesquisar na
+6:00
+internet e depois de pesquisar na
+6:02
+internet trazer esse briefing para ser
+6:04
+aprovado por você. Depois desse briefing
+6:06
+aprovado, incrementado, ele vai criar o
+6:09
+PRD com PM. E não é você que cria o PRD,
+6:11
+você cria o briefing junto com o
+6:14
+analista. PRD vai pro PM e ele cria os
+6:17
+requisitos funcionais bem definidos. A
+6:21
+partir daí ele vai para um X design. Ele
+6:24
+vai, ó, já temos três agentes
+6:26
+trabalhando em sequência. Esse agente
+6:28
+UX, ele vai criar um MD que seria as
+6:31
+especificações de X UI. Tendo essas
+6:34
+especificações prontos, ele vai para um
+6:36
+arquiteto fustec, ele vai desenhar o
+6:40
+front end, os end points, arquitetura
+6:42
+fusttec. E aí é que entra a
+6:45
+incrementação em ciclo, que é a
+6:47
+arquitetura pediu ajuste de PDR, porque
+6:50
+a arquitetura pode ver, ó, essa
+6:52
+funcionalidade não tá boa, ela não tá
+6:54
+boa. Então o que é que tem que ser
+6:56
+feito? Você vai trazer pro PM de volta,
+6:59
+veja. E o PM de volta vai criar novos
+7:01
+requisitos funcionais, ajustar, passar
+7:04
+pro processo totalmente de novo e depois
+7:07
+validar todo o PDR atualizado. E faz
+7:09
+esse ciclo quantas vezes for necessário
+7:11
+até ter um PDR alinhado. Aí o que
+7:13
+acontece? Depois do PDR atualizado, o PO
+7:17
+valida a consistência dos artefatos.
+7:20
+Vamos lá. analista, PM, project manager,
+O erro final: PRD generico e handoff fraco
+7:23
+gerente de projeto e o X Design, é o
+7:26
+cara que vai ser o designer, o designer.
+7:28
+Depois o Art
+7:30
+é o arquiteto. Já temos quatro cara aqui
+7:33
+trabalhando junto. E agora a gente vai
+7:35
+pro PO. Pou é o productor, que é
+7:38
+proprietário do projeto. O proprietário
+7:40
+do projeto, ele vai entender do negócio
+7:43
+em si, do que você vai resolver e vai
+7:45
+dizer assim, ó, isso aqui não tá
+7:46
+validado, não tá de acordo com o PRD,
+7:48
+não tá de acordo com a visão de negócio.
+7:50
+E esse cara, ele ele meio que tem um
+7:52
+tato junto com você. A partir disso, ele
+7:55
+vai para um checklist de consistência. E
+7:58
+que diabo é que cheque de consistência
+8:00
+seria? Ó, tem que ter isso, tem que ter
+8:02
+isso, tem que ter isso, tem que ter
+8:04
+isso, tem que ter isso. E você pede pro
+8:06
+pior fazer isso. Beleza? Encontrou as
+8:08
+consistências, não vai pra próxima
+8:10
+etapa. Encontrou inconsistências, delega
+8:13
+correções e revalida com PM. Isso vai
+Reset: pipeline sem orquestracao
+8:16
+faltando em ciclo. Não tem mais, não tem
+8:19
+mais inconsistência. Acabou
+8:20
+inconsistências. A primeira fase de
+8:23
+planejamento
+8:25
+acabou. A primeira fase de planejamento
+8:27
+acabou. Agora a gente vai pra parte de
+8:30
+documentação, porque quando tu cria a
+8:33
+documenta, tu primeiro tu planeja, tu
+8:35
+entendeu a arquitetura, entendeu tudo
+8:37
+que vai funcionar, tu vai pra parte de
+8:38
+documentação, que aí dentro da
+8:40
+arquitetura, ó, tu tem a árvore de
+8:42
+processo, as funcionalidades, as stacks
+8:45
+que vão ser feitas, padrão de código que
+8:47
+vai ser feito, tudo isso vai ser criado
+8:50
+automaticamente. E aqui também, ó, você
+8:53
+quebra o PDR em arquiteturas em unidades
+8:56
+executáveis. O que diabo seria isso?
+8:58
+Imagina, tu tem uma arquitetura que ela
+9:00
+tem o front end, o back end e a parte de
+9:03
+dados. Três stacks. Dentro da stack de
+9:05
+frontend, tu tem JavaScript, que é a
+9:07
+parte de codificação e a parte de
+Como fechar com cadencia semanal
+9:10
+estilização. Tem a X e a UI, que é
+9:13
+JavaScript junto com a HTML. Ou seja, tu
+9:15
+tem três etapas. Aí dentro do back end
+9:17
+tu tem a interação com front end e tem a
+9:19
+interação com o banco. Isso são isso só
+9:22
+são artefatos soltos. Mas além disso, tu
+9:25
+pode ver incrementos de funcionalidades.
+9:28
+Por exemplo, o primeiro view, o segundo
+9:30
+view, o modal. Isso são terminologias
+9:33
+que a gente utiliza dentro do
+9:34
+desenvolvimento. E essas terminologias
+9:37
+elas precisam estar quebradas para um
+9:39
+desenvolvimento ágil. Um ótimo livro pr
+9:42
+você entender isso seria a arte. A arte
+9:46
+de fazer o dobro pela metade do tempo.
+9:49
+Esse aqui, ó, scrun. Você baixa ele,
+9:51
+bota no LLM, no notebook LM e você
+9:56
+consegue fazer perguntas sobre ele para
+9:58
+entender a parte de desenvolvimento
+9:59
+ágil, como é que funciona, porque isso
+10:02
+faz a diferença de você entender por eu
+10:04
+sei da parada, porque eu tô tão
+10:06
+empolgado com o A iOS, porque eu li esse
+10:08
+livro, porque eu fiz gestão de projetos,
+10:10
+porque eu sou engenheiro, porque eu
+10:12
+trabalhei com projétil, porque eu
+10:14
+trabalhei com papeline, porque eu sou
+10:15
+desenvolvedor, porque eu já fipo, porque
+10:18
+eu já fui scram marcha de negócio.
+10:20
+Então, à medida que você trabalha com
+Fechamento + CTA
+10:23
+essa parada e você entende de processos,
+10:26
+processos, você consegue amar o A iios.
+10:30
+Por voltando, tudo isso é um processo
+10:33
+que já existe no mundo real. Ele só
+10:35
+adaptou para Iais. Agora, ó, tu tem a
+10:37
+primeira fase, planejou, a segunda fase,
+10:39
+documentou, quebrou em etapas, quebrou,
+10:42
+ó, primeira etapa, segunda etapa,
+10:43
+terceira etapa. E essa etapa vai ter
+10:45
+histórias de usuário, que é como o
+10:47
+usuário gostaria que isso funcionasse,
+10:48
+como o usuário estaria interagindo com
+10:50
+esse projeto. E aí é que vem a mágica do
+10:53
+negócio, que é depois do documento
+10:55
+pronto, a gente vai pro desenvolvimento
+10:58
+em ciclo. E desenvolvimento em ciclo não
+11:00
+apenas por, ah, terminou um
+11:02
+desenvolvimento, volta pra melhoria,
+11:04
+não. É desenvolvimento por história.
+11:07
+Porque quando tu começas a criar
+11:10
+histórias de usuários, o desenvolvedor
+11:12
+ele entende melhor. exemplo, vamos
+11:15
+desenvolver um mouse. Vamos criar um
+11:17
+mouse, beleza? Um mousezinho. A gente
+11:19
+vai criar esse mouse agora. E para criar
+11:21
+esse mouse, a gente precisa de algumas
+11:23
+funcionalidades. Quais são as
+11:25
+funcionalidades? Ó, a gente vai ter o
+11:27
+requisito. Eles tem que ter três botão,
+11:29
+dois e o três. O botão do meio, ele tem
+11:31
+que rolar para cima e para baixo e ele
+11:32
+tem que ser deslizante. Beleza? A gente
+11:35
+tem alguns critérios. Agora, como é que
+11:37
+a gente passa isso pro desenvolvedor?
+11:39
+Ele já tem os critérios, mas ele poderia
+11:41
+criar um mouse totalmente diferente. Aí
+11:43
+você vai criar histórias de usuários
+11:45
+para que ele não crie diferente daquilo
+11:47
+que você pensou. É como se você criasse
+11:50
+um lúdico que mexesse no imaginário do
+11:53
+desenvolvedor. Um lúdico que ele fique
+11:55
+pensando, pô, é assim que o cara
+11:57
+funciona? Como se tivesse lendo uma
+11:58
+historinha de quadrinhos. E geralmente o
+12:00
+pessoal que é bom em desenvolvimento
+12:02
+ágil faz histórias em quadr e aí o que
+12:04
+acontece? Ele vai dizer assim, ó, ó,
+12:05
+esse mouse ele vai ser algo deslizante
+12:09
+que move um ponteiro. O usuário vai
+12:12
+estar sentado, ele vai conseguir mover
+12:14
+com tranquilidade,
+12:17
+ele vai conseguir clicar no que ele
+12:19
+quer, ele vai escolher. Ele tá ali, ó,
+12:22
+olhando, deslizando e conseguindo
+12:25
+controlar o seu computador apenas
+12:27
+movendo uma peça que tá na mão dele.
+12:30
+Essa peça, ela vai est escorada com o
+12:33
+indicador direito, com o indicador, com
+12:35
+o o anelar, com o do meio e vai
+12:38
+conseguir controlar as coisas. Quando
+12:40
+você tem essa história de usuário bem
+12:42
+feita para cada funcionalidade do da tua
+12:44
+aplicação, consegues fazer com que o
+12:47
+desenvolvimento seja totalmente ágil. E
+12:49
+aí esse desenvolvimento dentro do iios é
+12:51
+um desenvolvimento por histórias. E aí,
+12:54
+ó, quem vai criar a próxima história vai
+12:56
+ser o SM, ele vai ser o Scrmaster. Tu
+12:58
+tem, ó, analista, project manager, Uex,
+13:02
+arquiteto, PM, PO. E agora tu tem o
+13:05
+Scrum Master. O scrmaster vai criar as
+13:08
+histórias de usuário. As histórias de
+13:10
+usuário vai pr pra execução. A execução
+13:13
+passa pelo PM e pelo analista para poder
+13:16
+revisar o draft, que seria o resumo
+13:18
+daquilo que o cara criou. Aí aprovado,
+13:20
+passa para o dev que vai implementar a
+13:23
+história. Ele entrega a história pra
+13:25
+review. O Q que é o quality assurance,
+13:27
+ele vai conseguir fazer a a verificação
+13:30
+daquilo e ver se tá de acordo com aquilo
+13:33
+tudo. Depois disso, o resultado passa
+13:35
+para uma avaliação técnica. O que deixou
+13:37
+alguma pendência? Não. Critório aceito,
+13:40
+finalizou. Não aceito, prima pra próxima
+13:42
+história e faz o ciclo novamente. Que
+13:45
+significa isso? Tem uma história um,
+13:47
+desenvolveu, desenvolveu. História um,
+13:49
+passou para a revisão da história um, tá
+13:51
+OK? Tá OK. Presta para desenvolvimento.
+13:53
+Desenvolvimento. Passou, OK. Passa para
+13:55
+o quality insurance, não está OK. Passa
+13:57
+pra história de usuário para ele poder
+13:59
+refazer isso daqui que deu errado.
+14:01
+Avaliou, tá OK, tá OK. Desenvolvimento
+14:03
+tá OK, tá OK. Passe pro quality anchurra
+14:05
+uma Quality Anchurra. Diz que OK, pá,
+14:07
+próxima história. E aí o ciclo vai ser
+14:10
+feito em todas as histórias. E aí a cada
+14:13
+história você vai conseguir construir
+14:15
+algo satisfatório com o tempo. Ah,
+14:18
+Ítalo, mas isso demora. Demora. Ah,
+14:20
+Ítalo, mas isso é ruim porque gasta
+14:22
+muito tokens. Em tese, sim, gasta muito
+14:25
+tokens, mas tu consegue manter uma
+14:28
+qualidade no teu código, consegue manter
+14:30
+uma estrutura saudável, porque ele vai
+14:33
+interagir a cada etapa com histórias que
+14:37
+fazem ele ter contexto e não apenas
+14:40
+contexto da tua trad, mas contexto
+14:42
+documental daquilo que ele está fazendo.
+14:44
+Seja etapa por etapa, seja lógica por
+14:47
+lógica, seja história por história. Se
+14:50
+ele tiver com dúvida nessa história
+14:51
+daquilo que ele que ele tem que fazer,
+14:53
+ele pode entender o objetivo geral
+14:55
+olhando olhando lá pro. Então tu vê,
+14:59
+nota nota que o teu PRD não é o fim,
+15:02
+opa, não é o início. O teu PRD ele é
+15:05
+incremental. Incremental. Eu vou colocar
+15:07
+aqui, ó. PRD é incremental, dinâmico. É
+15:11
+um PRD dinâmico, dinâmico,
+15:14
+dinâmico. PRD dinâmico. A cada etapa, o
+15:19
+teu PRD ele vai modificar, ele vai ser
+15:22
+ajustado para que a IA entenda. E por
+15:24
+isso que isso funciona também, porque os
+15:26
+fluxos já estão lá dentro. Se você pedir
+15:29
+para lá, ó, eu quero um fluxo
+15:31
+Greenfield, isso aqui já foi desenhado,
+15:34
+ele vai seguir essa etapa. Agora, por
+15:37
+que o teu código ele não funciona tão
+15:40
+bem e ele fica pedindo para tu clicar
+15:42
+para que tu valide cada etapa? Mas eu eu
+15:45
+não quero validar isso, Italo. Eu quero
+15:47
+que ela decida no fim das contas. Aí
+15:49
+você vai lá e coloca assim, ó. Iolo
+15:53
+mode. Tem uma funcionalidade chamada
+15:56
+yolo mode, que ela vai fazer tudo em
+15:59
+modo you only live once. Que diabo é
+16:03
+isso? que é você só vive uma vez, ela
+16:06
+tem que fazer tudo, como se vivesse uma
+16:08
+única vez. Ela recebe esse comando e
+16:11
+consegue fazer tudo. Sai do jeito que
+16:13
+você quer, depois de vários yow modes,
+16:16
+ela vai sair. Mas a ideia é que você
+16:19
+construa com poucas interações
+16:22
+ali medindo e referindo. Opa, eu viro um
+16:26
+orquestrador de e de etapas. Eu consigo
+16:31
+validar as etapas. as etapas.
+16:34
+Entende isso? Então, entenda do processo
+16:37
+criativo, entenda de como funciona o
+16:40
+fluxo por completo e aí você vai
+16:43
+conseguir desenvolver muito melhor, tá?
+16:45
+Os fluxos que vocês vão criar paraos
+16:47
+seus squads, eles têm que obedecer uma
+16:50
+ordem basicamente desse jeito. E por
+16:53
+isso que agora é quase uma aula
+16:55
+administrativa.
+16:56
+Leiam, tenham repertório de processo,
+17:00
+observem o mundo real, como funciona,
+17:03
+porque é isso que vai fazer aí a
+17:05
+performar bem. Essa porcaria só funciona
+17:07
+porque os cara que criaram um Alan,
+17:09
+aquele Thiago Finch e o Pedro Valério
+17:12
+entendem de processo de desenvolvimento.
+17:15
+Apesar que foi o cara do bimed que fez
+17:17
+essa aqui. Exatamente, né? Mas no
+17:19
+fim das contas, quando tu entende do
+17:21
+processo, essa porcaria funciona muito
+17:23
+bem, irmão. Funciona muito bem. Por que
+17:25
+eu digo isso? Porque quando eu criei
+17:27
+aqui, ó, essa parada aqui, eu fiquei
+17:29
+pensando, merda, irmão. merda,
+17:32
+eu fiz um um baita de um PRD e tá uma
+17:34
+merda. não tá indo bem. É óbvio que ele
+17:36
+não vai funcionar bem. Mas quando eu já
+17:38
+fiz a conversa dos miners aqui, que
+17:40
+gerou que gerou esse obsidian aqui, ó o
+17:42
+obsidian, ó o obsidian. Foi tudo aí a
+17:45
+que fez, irmão. Tá tudo segregado,
+17:47
+clusterizado, bem bonitinho, do jeito
+17:49
+que eu preciso. Taxionomia, de onde
+17:51
+veio, de onde vai, o resumo. Cara, isso
+17:54
+aqui é bizarro. Bizarro. E tudo foi a
+17:56
+que fez. Porque o projeto ficou bem?
+17:58
+Porque eu fiz do modo interativo. Eu fui
+18:00
+construindo cada coisa, eu fui
+18:02
+interagindo, eu fui fazendo improvements
+18:04
+do meu processo. Então pare
+18:07
+colocou lá modo automático que vai
+18:09
+dormir, que isso tudo vai virar
+18:11
+perfeito. Às vezes ele faz isso tudo
+18:14
+porque ele gasta tempo aqui, ó. Ele
+18:16
+gasta tempo, tempo nessas fases aqui de
+18:20
+planejamento e documentação. Aí na parte
+18:22
+de desenvolvimento fica filé. Ele coloca
+18:25
+lá a PI, a chave da API dele, só para
+18:27
+quando acabar o dinheiro, só para quando
+18:29
+acabar, porque o planejamento em si vai
+18:32
+ser o primordial para o projeto
+18:35
+funcionar. E esse essa etapa, mano,
+18:38
+mano, pelo amor de Deus, já dei aula
+18:40
+demais, mano. Já falei demais, já falei
+18:42
+demais, já falei o suficiente 32 minutos
+18:44
+aqui falando para vocês entenderem que
+18:46
+isso funciona. Eu quero que vocês me
+18:48
+ajudem depois dessa aula, ok? Depois de
+18:50
+vocês entenderem essa aula, eu vou
+18:51
+explicar mais fluxos, eu vou explicar
+18:53
+fluxos de processo, quase como uma aula
+18:55
+de administração, e depois colocar em
+18:57
+prática para vocês verem. Ah, se vocês
+18:59
+quiserem me ajudar, já clica aqui em
+19:01
+gostei, se inscreve no canal e coloca
+19:03
+uma dúvida. Seja a mais burra que tiver
+19:06
+ou um obrigado, comentem e clique no
+19:08
+gostei, por eu estou participando de um
+19:11
+Eu estou participando de um projeto de
+19:13
+viralizar o Aios e eu tô concorrendo com
+19:16
+outras pessoas para ganhar um MacBook e
+19:18
+ganhar alguns kits do AOS OS Pro. Então,
+19:21
+se vocês quiserem me ajudar a querer
+19:24
+ganhar isso daí, já comenta aqui, já
+19:26
+coloca. Se você gostou do vídeo e tem
+19:28
+mais dúvidas, coloca aqui nos
+19:30
+comentários as suas dúvidas que eu vou
+19:32
+tirar. Além de colocar suas dúvidas,
+19:34
+clica no gostei, se inscreve no canal,
+19:36
+porque as próximas aulas estão ficando
+19:38
+cada vez mais robustas, estão ficando
+19:39
+cada vez melhores e vocês vão conseguir
+19:41
+desenvolver muito melhor cada etapa com
+19:45
+e iOS. Eu sou italulá. Tchau, tchau.

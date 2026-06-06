@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    { "path": "/cron/dispatch-all?workflow=analysis", "schedule": "0 5 * * *" },
+    { "path": "/cron/dispatch-all?workflow=synthesis-consolidation", "schedule": "0 6 * * *" },
+    { "path": "/cron/dispatch?workflow=journey-radar", "schedule": "30 6 * * *" },
+    { "path": "/cron/dispatch-all?workflow=journey-referencias", "schedule": "0 7 * * *" },
+    { "path": "/cron/dispatch-all?workflow=journey-captacao", "schedule": "30 5 * * *" },
+    { "path": "/cron/dispatch-all?workflow=journey-insights", "schedule": "0 7 * * 1" }
+  ]
+}

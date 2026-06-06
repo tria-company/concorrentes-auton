@@ -1,0 +1,34 @@
+# Compose do "auton-painel": Concorrentes + Batalhão em UM container.
+# Pré-requisitos no host (VPS):
+#   - Repos clonados side-by-side: /opt/.../Agent_concorrentes_auton e .../Agent_batalhao_auton
+#   - .env separados em /opt/painel/concorrentes.env e /opt/painel/batalhao.env (não commitar!)
+# Uso (do diretório do Concorrentes):
+#   docker compose -f compose.painel.yml up -d --build
+services:
+  auton-painel:
+    container_name: auton-painel
+    restart: unless-stopped
+    build:
+      context: .                                  # raiz do Concorrentes
+      dockerfile: Dockerfile
+      additional_contexts:
+        # Permite o Dockerfile usar `COPY --from=batalhao …` sem mover arquivos.
+        # Funciona com Docker Buildx (default no Docker Desktop e em docker engines recentes).
+        batalhao: ../Agent_batalhao_auton
+    ports:
+      # Bind só em loopback — o reverse proxy da VPS expõe externamente.
+      - "127.0.0.1:4111:4111"  # Concorrentes (Mastra)
+      - "127.0.0.1:4112:4112"  # Batalhão (Hono)
+    volumes:
+      # 2 .env separados — cada serviço lê o seu via cwd no supervisord.
+      - /opt/painel/concorrentes.env:/app/concorrentes/.env:ro
+      - /opt/painel/batalhao.env:/app/batalhao/.env:ro
+    healthcheck:
+      # Checa o Batalhão (endpoint /healthz dedicado). O Concorrentes responde 401
+      # sem auth no /cron/dispatch (Mastra não tem /health), e `curl -fs` rejeitaria.
+      # Se um dos dois cair, supervisord reinicia (autorestart=true).
+      test: ["CMD", "curl", "-fs", "http://localhost:4112/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s

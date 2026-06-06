@@ -1,0 +1,21 @@
+# Segredos
+.env
+.env.local
+.env.*.local
+
+# Dependências / build
+node_modules/
+dist/
+.mastra/
+.vercel/
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
