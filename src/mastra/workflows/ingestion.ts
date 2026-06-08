@@ -113,29 +113,49 @@ const parseToSilver = createStep({
     }
     const sb = supabase();
 
-    // Idempotência: filtra linhas já existentes pela chave natural da tabela.
+    // Separa rows novas vs já existentes pra estatística e estratégia diferente no DB.
     const keyVals = silver.rows.map((r) => r[silver.key]).filter((v) => v != null);
     let fresh = silver.rows;
+    let existingKeys = new Set<string>();
     if (keyVals.length > 0) {
       const { data: existing } = await sb.from(silver.table).select(silver.key).in(silver.key, keyVals as any[]);
-      const seen = new Set((existing ?? []).map((e: any) => String(e[silver.key])));
-      fresh = silver.rows.filter((r) => !seen.has(String(r[silver.key])));
+      existingKeys = new Set((existing ?? []).map((e: any) => String(e[silver.key])));
+      fresh = silver.rows.filter((r) => !existingKeys.has(String(r[silver.key])));
     }
 
-    // (a) Arquiva mídia das rows novas no MinIO ANTES do insert, trocando URLs CDN externos pelo
-    // URL público do MinIO. Idempotente (HEAD antes do PUT). Se MinIO não estiver configurado, no-op.
-    if (fresh.length > 0 && minioEnabled() && ARCHIVE_MAP[silver.table]) {
+    // (a) Arquiva mídia de TODAS as rows (novas E existentes) no MinIO. Idempotente — se MinIO já
+    // tem o objeto (HEAD passa), retorna a URL existente sem re-baixar. Sem MinIO, é no-op.
+    if (silver.rows.length > 0 && minioEnabled() && ARCHIVE_MAP[silver.table]) {
       const slugCache = new Map<string, string>();
       const CONC = Number(process.env.MINIO_CONCURRENCY ?? 4);
-      for (let i = 0; i < fresh.length; i += CONC) {
-        await Promise.all(fresh.slice(i, i + CONC).map((r) => archiveRowMedia(sb, silver.table, r, slugCache)));
+      for (let i = 0; i < silver.rows.length; i += CONC) {
+        await Promise.all(silver.rows.slice(i, i + CONC).map((r) => archiveRowMedia(sb, silver.table, r, slugCache)));
       }
     }
 
+    // (b) INSERT pras rows novas (com mídia já arquivada no MinIO).
     if (fresh.length > 0) {
       const { error } = await sb.from(silver.table).insert(fresh);
       if (error) throw new Error(`${silver.table} insert: ${error.message}`);
     }
+
+    // (c) UPDATE pras rows já existentes — só os campos de URL de mídia que apontam agora pro MinIO.
+    // Permite "refrescar" URLs CDN expirados no DB sem mexer em metrics/captions/etc.
+    const archiveSpec = ARCHIVE_MAP[silver.table];
+    if (archiveSpec && existingKeys.size > 0 && minioEnabled()) {
+      const minioPrefix = process.env.MINIO_ENDPOINT ?? '__NOPE__';
+      const dups = silver.rows.filter((r) => existingKeys.has(String(r[silver.key])));
+      for (const row of dups) {
+        const update: Record<string, unknown> = {};
+        for (const f of archiveSpec.fields) {
+          const v = row[f];
+          if (typeof v === 'string' && v.startsWith(minioPrefix)) update[f] = v;
+        }
+        if (Object.keys(update).length === 0) continue;
+        await sb.from(silver.table).update(update).eq(silver.key, row[silver.key]);
+      }
+    }
+
     if (inputData.raw_id != null) {
       await sb.from('apify_raw').update({ processed: true, status: 'parsed' }).eq('id', inputData.raw_id);
     }
