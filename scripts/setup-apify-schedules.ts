@@ -213,10 +213,8 @@ async function upsertWebhook(ex: Existing, name: string, taskId: string, url: st
     condition: { actorTaskId: taskId },
     requestUrl: url,
     headersTemplate: JSON.stringify({ 'x-apify-secret': WEBHOOK_SECRET, 'content-type': 'application/json' }),
-    payloadTemplate: JSON.stringify({
-      eventType: '{{eventType}}',
-      resource: { id: '{{resource.id}}', actId: '{{resource.actId}}', defaultDatasetId: '{{resource.defaultDatasetId}}' },
-    }),
+    // Sem `payloadTemplate` → Apify usa o payload default, que inclui `resource` COMPLETO
+    // (com defaultDatasetId, actId, status, etc.) — evita o problema de placeholders vazios.
   };
   if (found) {
     if (DRY) { console.log(`  [DRY] UPDATE webhook ${name}`); return; }

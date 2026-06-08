@@ -34,15 +34,21 @@ export const apiRoutes = [
         body.runId ?? body.resource?.id ?? body.eventData?.actorRunId ?? null;
       if (!runId) return c.json({ error: 'missing runId' }, 400);
 
-      // (1) SEMPRE busca os detalhes da run — single source of truth pra actId + datasetId.
-      // Se algum dia o body do webhook estiver completo, ainda assim é só 1 round-trip extra de ~100ms.
-      const runRes = await fetch(`https://api.apify.com/v2/actor-runs/${runId}?token=${token}`);
-      if (!runRes.ok) {
-        return c.json({ error: `actor-run HTTP ${runRes.status}` }, 502);
+      // (1) Tenta primeiro extrair do body (caso o template payloadTemplate venha completo).
+      // Se faltar, busca da API com retry — Apify às vezes demora 2-5s pra propagar a run após terminar.
+      let datasetId: string | null = body.resource?.defaultDatasetId ?? null;
+      let actId: string | null = body.actorId ?? body.actor_id ?? body.resource?.actId ?? null;
+      if (!datasetId || !actId) {
+        let runData: any = null;
+        for (const delay of [0, 1500, 3500]) {
+          if (delay > 0) await new Promise((r) => setTimeout(r, delay));
+          const r = await fetch(`https://api.apify.com/v2/actor-runs/${runId}?token=${token}`);
+          if (r.ok) { runData = ((await r.json()) as { data?: any })?.data ?? null; if (runData) break; }
+        }
+        if (!runData) return c.json({ error: `actor-run ${runId} indisponivel apos 3 tentativas` }, 502);
+        datasetId = datasetId ?? runData.defaultDatasetId ?? null;
+        actId = actId ?? runData.actId ?? null;
       }
-      const runData = ((await runRes.json()) as { data?: any })?.data ?? {};
-      const datasetId: string | null = runData.defaultDatasetId ?? body.resource?.defaultDatasetId ?? null;
-      const actId: string | null = runData.actId ?? body.actorId ?? body.actor_id ?? body.resource?.actId ?? null;
       if (!datasetId) return c.json({ error: 'run sem defaultDatasetId' }, 422);
 
       // (2) INPUT do run no KV store contém `_autonMeta` (source + competitor_id) injetado pelo setup-apify-schedules.ts
