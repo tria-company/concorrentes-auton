@@ -28,19 +28,31 @@ export const apiRoutes = [
       if (!token) return c.json({ error: 'APIFY_TOKEN ausente' }, 500);
 
       const body = (await c.req.json().catch(() => ({}))) as Record<string, any>;
-      const runId: string | null = body.runId ?? body.resource?.id ?? null;
-      const datasetId: string | null = body.resource?.defaultDatasetId ?? null;
-      const actId: string | null = body.actorId ?? body.actor_id ?? body.resource?.actId ?? null;
-      if (!runId || !datasetId) return c.json({ error: 'missing resource.id/defaultDatasetId' }, 400);
+      // O payload do Apify pode vir com `resource` populado OU só com `eventData.actorRunId`
+      // (caso de webhooks TEST ou se o template `{{resource.*}}` não renderizar). Aceitamos ambos.
+      const runId: string | null =
+        body.runId ?? body.resource?.id ?? body.eventData?.actorRunId ?? null;
+      if (!runId) return c.json({ error: 'missing runId' }, 400);
 
-      // (1) INPUT do run no KV store contém `_autonMeta` (source + competitor_id) injetado pelo setup-apify-schedules.ts
+      // (1) SEMPRE busca os detalhes da run — single source of truth pra actId + datasetId.
+      // Se algum dia o body do webhook estiver completo, ainda assim é só 1 round-trip extra de ~100ms.
+      const runRes = await fetch(`https://api.apify.com/v2/actor-runs/${runId}?token=${token}`);
+      if (!runRes.ok) {
+        return c.json({ error: `actor-run HTTP ${runRes.status}` }, 502);
+      }
+      const runData = ((await runRes.json()) as { data?: any })?.data ?? {};
+      const datasetId: string | null = runData.defaultDatasetId ?? body.resource?.defaultDatasetId ?? null;
+      const actId: string | null = runData.actId ?? body.actorId ?? body.actor_id ?? body.resource?.actId ?? null;
+      if (!datasetId) return c.json({ error: 'run sem defaultDatasetId' }, 422);
+
+      // (2) INPUT do run no KV store contém `_autonMeta` (source + competitor_id) injetado pelo setup-apify-schedules.ts
       let meta: { competitor_id?: string | null; source?: string | null } = {};
       try {
         const r = await fetch(`https://api.apify.com/v2/actor-runs/${runId}/key-value-store/records/INPUT?token=${token}`);
         if (r.ok) meta = ((await r.json()) as Record<string, any>)?._autonMeta ?? {};
       } catch { /* meta vazia */ }
 
-      // (2) Items do dataset
+      // (3) Items do dataset
       const itemsRes = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items?token=${token}&clean=true&format=json`);
       if (!itemsRes.ok) {
         const t = await itemsRes.text().catch(() => '');
