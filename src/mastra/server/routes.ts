@@ -28,10 +28,15 @@ export const apiRoutes = [
       if (!token) return c.json({ error: 'APIFY_TOKEN ausente' }, 500);
 
       const body = (await c.req.json().catch(() => ({}))) as Record<string, any>;
-      // Aceita runId em vários formatos pra cobrir TEST webhook e templates parciais do Apify.
-      const runId: string | null =
-        body.runId ?? body.resource?.id ?? body.eventData?.actorRunId ?? null;
-      if (!runId) return c.json({ error: 'missing runId' }, 400);
+      // Aceita runId em vários formatos:
+      //   - body.runId (custom)
+      //   - body.resource.id (default Apify payload)
+      //   - body.eventData.actorRunId (eventData payload)
+      //   - body.id (quando payloadTemplate='{{resource}}', o body É a resource toda)
+      // Filtra placeholders não-substituídos ({{x}}) que vêm da quirky template engine do Apify.
+      const candidates = [body.runId, body.resource?.id, body.eventData?.actorRunId, body.id];
+      const runId: string | null = candidates.find((v) => typeof v === 'string' && v.length > 0 && !v.includes('{{')) ?? null;
+      if (!runId) return c.json({ error: 'missing runId', body_keys: Object.keys(body) }, 400);
 
       // Apify dispara o webhook ~1s depois da run terminar, mas /actor-runs/{id} leva 2-7s
       // pra propagar. Ignoramos o body (placeholders {{...}} às vezes não renderizam) e
