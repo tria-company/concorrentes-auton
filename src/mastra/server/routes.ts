@@ -28,27 +28,23 @@ export const apiRoutes = [
       if (!token) return c.json({ error: 'APIFY_TOKEN ausente' }, 500);
 
       const body = (await c.req.json().catch(() => ({}))) as Record<string, any>;
-      // O payload do Apify pode vir com `resource` populado OU só com `eventData.actorRunId`
-      // (caso de webhooks TEST ou se o template `{{resource.*}}` não renderizar). Aceitamos ambos.
+      // Aceita runId em vários formatos pra cobrir TEST webhook e templates parciais do Apify.
       const runId: string | null =
         body.runId ?? body.resource?.id ?? body.eventData?.actorRunId ?? null;
       if (!runId) return c.json({ error: 'missing runId' }, 400);
 
-      // (1) Tenta primeiro extrair do body (caso o template payloadTemplate venha completo).
-      // Se faltar, busca da API com retry — Apify às vezes demora 2-5s pra propagar a run após terminar.
-      let datasetId: string | null = body.resource?.defaultDatasetId ?? null;
-      let actId: string | null = body.actorId ?? body.actor_id ?? body.resource?.actId ?? null;
-      if (!datasetId || !actId) {
-        let runData: any = null;
-        for (const delay of [0, 1500, 3500]) {
-          if (delay > 0) await new Promise((r) => setTimeout(r, delay));
-          const r = await fetch(`https://api.apify.com/v2/actor-runs/${runId}?token=${token}`);
-          if (r.ok) { runData = ((await r.json()) as { data?: any })?.data ?? null; if (runData) break; }
-        }
-        if (!runData) return c.json({ error: `actor-run ${runId} indisponivel apos 3 tentativas` }, 502);
-        datasetId = datasetId ?? runData.defaultDatasetId ?? null;
-        actId = actId ?? runData.actId ?? null;
+      // Apify dispara o webhook ~1s depois da run terminar, mas /actor-runs/{id} leva 2-7s
+      // pra propagar. Ignoramos o body (placeholders {{...}} às vezes não renderizam) e
+      // SEMPRE fetchamos da API com retry/backoff — single source of truth.
+      let runData: any = null;
+      for (const delay of [0, 1500, 3500, 7000]) {
+        if (delay > 0) await new Promise((r) => setTimeout(r, delay));
+        const r = await fetch(`https://api.apify.com/v2/actor-runs/${runId}?token=${token}`);
+        if (r.ok) { runData = ((await r.json()) as { data?: any })?.data ?? null; if (runData) break; }
       }
+      if (!runData) return c.json({ error: `actor-run ${runId} indisponivel apos 4 tentativas` }, 502);
+      const datasetId: string | null = runData.defaultDatasetId ?? null;
+      const actId: string | null = runData.actId ?? null;
       if (!datasetId) return c.json({ error: 'run sem defaultDatasetId' }, 422);
 
       // (2) INPUT do run no KV store contém `_autonMeta` (source + competitor_id) injetado pelo setup-apify-schedules.ts
