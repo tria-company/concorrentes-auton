@@ -24,21 +24,48 @@ export const apiRoutes = [
       if (!process.env.APIFY_WEBHOOK_SECRET || secret !== process.env.APIFY_WEBHOOK_SECRET) {
         return c.json({ error: 'unauthorized' }, 401);
       }
+      const token = process.env.APIFY_TOKEN;
+      if (!token) return c.json({ error: 'APIFY_TOKEN ausente' }, 500);
+
       const body = (await c.req.json().catch(() => ({}))) as Record<string, any>;
+      const runId: string | null = body.runId ?? body.resource?.id ?? null;
+      const datasetId: string | null = body.resource?.defaultDatasetId ?? null;
+      const actId: string | null = body.actorId ?? body.actor_id ?? body.resource?.actId ?? null;
+      if (!runId || !datasetId) return c.json({ error: 'missing resource.id/defaultDatasetId' }, 400);
+
+      // (1) INPUT do run no KV store contém `_autonMeta` (source + competitor_id) injetado pelo setup-apify-schedules.ts
+      let meta: { competitor_id?: string | null; source?: string | null } = {};
+      try {
+        const r = await fetch(`https://api.apify.com/v2/actor-runs/${runId}/key-value-store/records/INPUT?token=${token}`);
+        if (r.ok) meta = ((await r.json()) as Record<string, any>)?._autonMeta ?? {};
+      } catch { /* meta vazia */ }
+
+      // (2) Items do dataset
+      const itemsRes = await fetch(`https://api.apify.com/v2/datasets/${datasetId}/items?token=${token}&clean=true&format=json`);
+      if (!itemsRes.ok) {
+        const t = await itemsRes.text().catch(() => '');
+        return c.json({ error: `dataset HTTP ${itemsRes.status}: ${t.slice(0, 200)}` }, 502);
+      }
+      const items = (await itemsRes.json()) as unknown[];
+
       const wf = c.get('mastra').getWorkflowById('ingestion');
-      const run = await wf.createRun({
-        runId: makeRunId('ingestion', body.runId ?? body.resource?.id ?? body),
-      });
+      const run = await wf.createRun({ runId: makeRunId('ingestion', runId) });
       const started: any = await run.startAsync({
         inputData: {
-          source: body.source ?? body.eventType ?? 'unknown',
-          apify_actor: body.actorId ?? body.actor_id ?? null,
-          apify_run_id: body.runId ?? body.resource?.id ?? null,
-          competitor_id: body.competitor_id ?? null,
-          payload: body,
+          source: meta.source ?? 'unknown',
+          apify_actor: actId ?? 'unknown',
+          apify_run_id: runId,
+          competitor_id: meta.competitor_id ?? null,
+          payload: items,
         },
       } as any);
-      return c.json({ ok: true, runId: started?.runId ?? null });
+      return c.json({
+        ok: true,
+        runId: started?.runId ?? null,
+        items: Array.isArray(items) ? items.length : 0,
+        source: meta.source ?? 'unknown',
+        competitor_id: meta.competitor_id ?? null,
+      });
     },
   }),
 

@@ -22,17 +22,18 @@ import 'dotenv/config';
 const TOKEN = required('APIFY_TOKEN');
 const WEBHOOK_SECRET = required('APIFY_WEBHOOK_SECRET');
 const WURL_CONC = required('WEBHOOK_URL_CONCORRENTES');
-const WURL_BAT = required('WEBHOOK_URL_BATALHAO');
+const WURL_BAT = process.env.WEBHOOK_URL_BATALHAO?.trim() ?? '';
 const DRY = process.env.DRY_RUN === '1';
 
 const SB_CONC = {
   url: required('SUPABASE_URL'),
   key: required('SUPABASE_SERVICE_ROLE_KEY'),
 };
-const SB_BAT = {
-  url: required('SUPABASE_URL_BATALHAO'),
-  key: required('SUPABASE_SERVICE_ROLE_KEY_BATALHAO'),
-};
+// Batalhão opcional — só configurado se as vars estiverem presentes.
+const SB_BAT_URL = process.env.SUPABASE_URL_BATALHAO?.trim() ?? '';
+const SB_BAT_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY_BATALHAO?.trim() ?? '';
+const HAS_BAT = !!(SB_BAT_URL && SB_BAT_KEY && WURL_BAT);
+const SB_BAT = HAS_BAT ? { url: SB_BAT_URL, key: SB_BAT_KEY } : null;
 
 function required(k: string): string {
   const v = process.env[k];
@@ -60,6 +61,20 @@ interface ActorSpec {
 
 const PER_PROFILE_LIMIT = 100; // ajustável; webhook do dataset captura tudo.
 
+// Mapeia channel → source canônico (chaves do parser em lib/parser.ts).
+// O webhook handler lê `_autonMeta.source` pra escolher o parser certo.
+const CHANNEL_TO_SOURCE: Record<Channel, string> = {
+  'ig-reels': 'instagram',
+  'ig-posts': 'instagram',
+  'tiktok': 'tiktok',
+  'youtube': 'youtube',
+  'fb-posts': 'facebook',
+  'fb-ads': 'meta_ads',
+  'google-ads': 'google_ads',
+  'google-reviews': 'google_reviews',
+  'reclame-aqui': 'reclame_aqui',
+};
+
 // ----- Catálogo Concorrentes -----
 const ACTORS_CONC: ActorSpec[] = [
   { channel: 'ig-reels', actor: 'apify~instagram-reel-scraper', cron: '0 3 * * *',
@@ -76,18 +91,18 @@ const ACTORS_CONC: ActorSpec[] = [
     buildInput: p => ({ startUrls: [{ url: p.extra!.fb_page_url! }], resultsLimit: PER_PROFILE_LIMIT }) },
   { channel: 'fb-ads', actor: 'apify~facebook-ads-scraper', cron: '0 4 * * *',
     needs: p => !!p.extra?.fb_page_url,
-    buildInput: p => ({ urls: [`https://www.facebook.com/ads/library/?active_status=all&ad_type=all&country=BR&search_type=page&view_all_page_id=`], onlyTotal: false }) },
+    buildInput: p => ({ startUrls: [{ url: p.extra!.fb_page_url! }], resultsLimit: PER_PROFILE_LIMIT }) },
   { channel: 'google-ads', actor: 'solidcode~ads-transparency-scraper', cron: '30 4 * * *',
     buildInput: p => ({ search: p.handle, region: 'BR', maxItems: PER_PROFILE_LIMIT }) },
   { channel: 'google-reviews', actor: 'compass~crawler-google-places', cron: '0 5 * * *',
     needs: p => !!p.extra?.google_place_id,
     buildInput: p => ({ placeIds: [p.extra!.google_place_id!], maxReviews: 100, reviewsSort: 'newest' }) },
-  { channel: 'reclame-aqui', actor: 'epctex~reclame-aqui-scraper', cron: '0 2 * * 1',
+  { channel: 'reclame-aqui', actor: 'solidcode~reclameaqui-scraper', cron: '0 2 * * 1',
     needs: p => !!p.extra?.ra_company_slug,
     buildInput: p => ({ companies: [p.extra!.ra_company_slug!], maxItems: 100 }) },
   { channel: 'youtube', actor: 'streamers~youtube-channel-scraper', cron: '45 3 * * *',
     needs: p => !!p.extra?.yt_channel_id,
-    buildInput: p => ({ startUrls: [`https://www.youtube.com/channel/${p.extra!.yt_channel_id!}/videos`], maxResultsShorts: 0, maxResults: PER_PROFILE_LIMIT }) },
+    buildInput: p => ({ startUrls: [{ url: `https://www.youtube.com/channel/${p.extra!.yt_channel_id!}/videos` }], maxResultsShorts: 0, maxResults: PER_PROFILE_LIMIT }) },
 ];
 
 // ----- Catálogo Batalhão (só IG + TikTok via Apify; YouTube via yt-dlp no /cron/scrape-youtube) -----
@@ -121,7 +136,7 @@ async function listAll<T extends { id: string; name?: string }>(path: string): P
   const out: T[] = [];
   let offset = 0;
   for (;;) {
-    const page = await apify<{ items: T[]; total: number }>(`${path}?limit=1000&offset=${offset}&desc=1`);
+    const page = await apify<{ items: T[]; total: number }>('GET', `${path}?limit=1000&offset=${offset}&desc=1`);
     out.push(...(page.items ?? []));
     if (!page.items?.length || out.length >= page.total) break;
     offset += page.items.length;
@@ -227,7 +242,8 @@ async function setupFor(
     for (const a of actors) {
       if (a.needs && !a.needs(p)) { skipped++; continue; }
       const name = nameFor(project, p.handle, a.channel);
-      const input = a.buildInput(p);
+      // Injeta metadata pra o webhook handler saber (a) qual concorrente e (b) qual parser usar.
+      const input = { ...a.buildInput(p), _autonMeta: { competitor_id: p.id, source: CHANNEL_TO_SOURCE[a.channel] } };
       try {
         const taskId = await upsertTask(ex, name, a.actor, input);
         await upsertSchedule(ex, name, taskId, a.cron);
@@ -257,18 +273,24 @@ async function setupFor(
   const r1 = await setupFor('conc', conc, ACTORS_CONC, WURL_CONC, ex);
   console.log(`  → ${r1.tasks} task(s) upserted, ${r1.skipped} skipped (sem handle do canal)`);
 
-  console.log('\n== Batalhão ==');
-  // ref_profiles tem (username, platform) — agrupa por username.
-  const refRaw = await fetchProfiles(SB_BAT, 'reference_profiles', 'username,platform,is_active');
-  const usernames = Array.from(new Set(refRaw.filter((r) => r.is_active).map((r) => r.username))).filter(Boolean);
-  const bat: Profile[] = usernames.map((u) => ({ id: u, handle: u }));
-  const r2 = await setupFor('bat', bat, ACTORS_BAT, WURL_BAT, ex);
-  console.log(`  → ${r2.tasks} task(s) upserted, ${r2.skipped} skipped`);
+  let r2 = { tasks: 0, skipped: 0 };
+  let batCount = 0;
+  if (HAS_BAT && SB_BAT) {
+    console.log('\n== Batalhão ==');
+    const refRaw = await fetchProfiles(SB_BAT, 'reference_profiles', 'username,platform,is_active');
+    const usernames = Array.from(new Set(refRaw.filter((r) => r.is_active).map((r) => r.username))).filter(Boolean);
+    const bat: Profile[] = usernames.map((u) => ({ id: u, handle: u }));
+    batCount = bat.length;
+    r2 = await setupFor('bat', bat, ACTORS_BAT, WURL_BAT, ex);
+    console.log(`  → ${r2.tasks} task(s) upserted, ${r2.skipped} skipped`);
+  } else {
+    console.log('\n== Batalhão == (SKIP — vars SUPABASE_URL_BATALHAO / WEBHOOK_URL_BATALHAO não setadas)');
+  }
 
   console.log('\n=== TOTAL ===');
   console.log(`  Concorrentes: ${r1.tasks} tasks (${conc.length} perfis × até ${ACTORS_CONC.length} canais)`);
-  console.log(`  Batalhão: ${r2.tasks} tasks (${bat.length} perfis × ${ACTORS_BAT.length} canais)`);
+  if (HAS_BAT) console.log(`  Batalhão: ${r2.tasks} tasks (${batCount} perfis × ${ACTORS_BAT.length} canais)`);
   console.log(`  Webhooks apontando p/ Concorrentes: ${WURL_CONC}`);
-  console.log(`  Webhooks apontando p/ Batalhão:    ${WURL_BAT}`);
+  if (HAS_BAT) console.log(`  Webhooks apontando p/ Batalhão:    ${WURL_BAT}`);
   if (DRY) console.log('\n(DRY_RUN — nada foi gravado.)');
 })().catch((e) => { console.error('FALHA:', e.message); process.exit(1); });
